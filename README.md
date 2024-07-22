@@ -1,6 +1,6 @@
 # Work_Flow
 
-## Goal
+## Goals and Methods
 The goal Work_Flow is to create a project management tool that allows users to organize projects and tasks for themselves, or on a callaborative team. Not too dissimiliar from the widely used "Trello" application.
 
 * This project will be designed using React, Python and Django.
@@ -14,4 +14,3 @@ The goal Work_Flow is to create a project management tool that allows users to o
 ![image](https://github.com/user-attachments/assets/7974ec28-ddc6-48ad-8e33-ae2a65d1b420)
 
 ## WireFrame
-
