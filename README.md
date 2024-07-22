@@ -14,3 +14,4 @@ The goal Work_Flow is to create a project management tool that allows users to o
 ![image](https://github.com/user-attachments/assets/3ff60ba7-4b75-447f-a13f-c4c8578d4ec2)
 
 ## WireFrame
+![image](https://github.com/user-attachments/assets/365c5346-a3a9-4090-a9a7-7a891a2131b7)
