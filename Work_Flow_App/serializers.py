@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Project, ProjectCollaboration, List, Task, ChecklistItem
+from .models import User, Project, ProjectCollaboration, List, Task, ChecklistItem, Invitation
 
 class ChecklistItemSerializer(serializers.HyperlinkedModelSerializer):
     task = serializers.HyperlinkedRelatedField(view_name='task_detail', read_only=True)
@@ -38,6 +38,15 @@ class ListSerializer(serializers.HyperlinkedModelSerializer):
        model = List
        fields = ('id', 'list_url', 'project', 'project_id', 'list_name', 'tasks')
 
+class InvitationSerializer(serializers.ModelSerializer):
+    sender = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    receiver = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    project = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all())
+
+    class Meta:
+        model = Invitation
+        fields = ('id', 'sender', 'receiver', 'project', 'status', 'created_at')
+
 class ProjectCollaborationSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     
@@ -46,7 +55,7 @@ class ProjectCollaborationSerializer(serializers.ModelSerializer):
         fields = ('user', 'project', 'can_edit')
 
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
-    owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), write_only=True)
 
     collaborators = ProjectCollaborationSerializer(source='projectcollaboration_set', many=True, read_only=True)
     
@@ -61,7 +70,9 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     owned_projects = ProjectSerializer(many=True, read_only=True)
     collaborating_projects = ProjectSerializer(many=True, read_only=True)
+    sent_invitations = InvitationSerializer(many=True, read_only=True)
+    received_invitations = InvitationSerializer(many=True, read_only=True)
 
     class Meta:
        model = User
-       fields = ('id', 'user_name', 'password', 'email', 'user_img', 'owned_projects', 'collaborating_projects')
+       fields = ('id', 'user_name', 'password', 'email', 'user_img', 'owned_projects', 'collaborating_projects', 'sent_invitations', 'received_invitations')

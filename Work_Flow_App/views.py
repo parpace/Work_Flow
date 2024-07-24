@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from rest_framework import generics
-from .models import User, Project, ProjectCollaboration, List, Task, ChecklistItem
-from .serializers import UserSerializer, ProjectSerializer, ProjectCollaborationSerializer, ListSerializer, TaskSerializer, ChecklistItemSerializer
+from rest_framework.exceptions import NotFound
+from .models import User, Project, ProjectCollaboration, List, Task, ChecklistItem, Invitation
+from .serializers import UserSerializer, ProjectSerializer, ProjectCollaborationSerializer, ListSerializer, TaskSerializer, ChecklistItemSerializer, InvitationSerializer
 
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
@@ -15,6 +16,9 @@ class ProjectList(generics.ListCreateAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
@@ -26,6 +30,28 @@ class ProjectCollaborationList(generics.ListCreateAPIView):
 class ProjectCollaborationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = ProjectCollaboration.objects.all()
     serializer_class = ProjectCollaborationSerializer
+
+class InvitationList(generics.ListCreateAPIView):
+    queryset = Invitation.objects.all()
+    serializer_class = InvitationSerializer
+
+class InvitationRequest(generics.ListCreateAPIView):
+    serializer_class = InvitationSerializer
+
+    def get_queryset(self):
+        user_id = self.request.query_params.get('user_id')
+        if user_id is not None:
+            try:
+                user = User.objects.get(pk=user_id)
+            except User.DoesNotExist:
+                raise Http404("User does not exist")
+            return Invitation.objects.filter(receiver=user)
+        else:
+            return Invitation.objects.none()
+
+class InvitationDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Invitation.objects.all()
+    serializer_class = InvitationSerializer
 
 class ListList(generics.ListCreateAPIView):
     queryset = List.objects.all()
