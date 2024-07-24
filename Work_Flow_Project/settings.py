@@ -68,7 +68,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        'rest_framework.permissions.AllowAny'
     ]
 }
 
@@ -99,8 +99,8 @@ WSGI_APPLICATION = 'Work_Flow_Project.wsgi.application'
 DATABASES = {
     'default': {
          'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'work_flow_db',
-        'USER': 'work_flow_user',
+        'NAME': 'work_flow_db2',
+        'USER': 'work_flow_user2',
         'PASSWORD': 'password',
         'HOST': 'localhost'
     }

@@ -11,7 +11,7 @@ class User(models.Model):
     
 class Project(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_projects')
-    collaborators = models.ManyToManyField(User, through='ProjectCollaborator', related_name='collaborating_projects')
+    collaborators = models.ManyToManyField(User, through='ProjectCollaboration', related_name='collaborating_projects', blank=True)
     project_name = models.CharField(max_length=50)
     background_image = models.CharField(max_length=200, blank=True, null=True)
     color_scheme = models.CharField(max_length=100, blank=True, null=True)
@@ -19,7 +19,7 @@ class Project(models.Model):
     def __str__(self):
         return self.project_name
     
-class ProjectCollaborator(models.Model):
+class ProjectCollaboration(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     can_edit = models.BooleanField(default=False)

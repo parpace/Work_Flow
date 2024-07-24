@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom"
 
 export default function Header () {
     const loggedInUser = localStorage.getItem('loggedInUser')
@@ -48,9 +48,9 @@ export default function Header () {
                     )}
                 </>
             ) : (
-                <div>
-                    <h1>No Header</h1>
-                </div>
+                <div className="headerLeft">
+                        <h3>Work_Flow</h3>
+                    </div>
             )}
         </div>
     )
