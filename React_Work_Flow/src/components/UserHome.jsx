@@ -1,5 +1,6 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 export default function UserHome () {
     const loggedInUser = localStorage.getItem('loggedInUser')
@@ -10,6 +11,7 @@ export default function UserHome () {
     const [showCreateNew, setShowCreateNew] = useState(false)
     const [showInviteNotification, setShowInviteNotification] = useState(false)
     const [showInvites, setShowInvites] = useState(false)
+    const navigate = useNavigate()
 
     useEffect(() => {
         const getUserData = async (userId) => {
@@ -20,9 +22,11 @@ export default function UserHome () {
                 setOwnedProjects(data.owned_projects)
                 setCollaboratorProjects(data.collaborating_projects)
 
-                const invitationsResponse = await axios.get(`http://127.0.0.1:8000/invitations/`)
-                const receivedInvitations = invitationsResponse.data.filter(invite => invite.receiver === userId)
-                if (invitationsResponse.data.length > 0) {
+                const invitationsResponse = await axios.get(`http://127.0.0.1:8000/user-invitations/?user_id=${userId}`)
+                const receivedInvitations = invitationsResponse.data
+                console.log (receivedInvitations)
+                console.log (receivedInvitations)
+                if (receivedInvitations.length > 0) {
                     setInvitations(receivedInvitations)
                     setShowInviteNotification(true)
                 }
@@ -58,9 +62,9 @@ export default function UserHome () {
     }
 
     const handleChange = (e) => {
-        setFormState({...formState,
-        [e.target.id] : e.target.value,
-        error:''
+        setFormState({
+            ...formState,
+            [e.target.name] : e.target.value
         })
     }
 
@@ -88,11 +92,11 @@ export default function UserHome () {
             {showCreateNew && (
                 <form className="newProjectForm" onSubmit={handleSubmitNewProject}>
                     <div className="newProjectName">
-                        <input type="text" id="newProjectName" placeholder="Name Your Project" onChange={handleChange} value={formState.projectName} />
+                        <input type="text" name="projectName" placeholder="Name Your Project" onChange={handleChange} value={formState.projectName} />
                     </div>
 
                     <div className="newProjectBackground">
-                        <input type="text" id="newProjectBackground" placeholder="Enter a url" onChange={handleChange} value={formState.backgroundImg} />
+                        <input type="text" name="backgroundImg" placeholder="Enter a url" onChange={handleChange} value={formState.backgroundImg} />
                     </div>
 
                     <div className="submitBtnContainer">
@@ -107,9 +111,9 @@ export default function UserHome () {
                 <ul className="invitationsList">
                     {invitations.map(invitation => (
                         <li className="invitation" key={invitation.id}>
-                            <button onClick={handleInvitations(invitation.id, 'accept')}>Accept</button>
-                            <button onClick={handleInvitations(invitation.id, 'decline')}>Decline</button>
-                            <h2>{invitation.sender.username} invited you to collaborate on {invitation.project.project_name}</h2>
+                            <button onClick={() => handleInvitations(invitation.id, 'accept')}>Accept</button>
+                            <button onClick={() => handleInvitations(invitation.id, 'decline')}>Decline</button>
+                            <h2>{invitation.sender_username} invited you to collaborate on {invitation.project_name}</h2>
                         </li>
                     ))}
                 </ul>
@@ -117,13 +121,13 @@ export default function UserHome () {
             <h2>My Projects</h2>
             <ul>
                 {ownedProjects.map(project => (
-                    <li key={project.id}>{project.project_name}</li>
+                    <li key={project.id} onClick={() => navigate(`/project/${project.id}`)}>{project.project_name}</li>
                 ))}
             </ul>
             <h2>Collaborating</h2>
             <ul>
                 {collaboratorProjects.map(project => (
-                    <li key={project.id}>{project.project_name}</li>
+                    <li key={project.id} onClick={() => navigate(`/project/${project.id}`)}>{project.project_name}</li>
                 ))}
             </ul>
         </div>

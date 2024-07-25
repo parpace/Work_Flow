@@ -13,7 +13,7 @@ class Project(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_projects')
     collaborators = models.ManyToManyField(User, through='ProjectCollaboration', related_name='collaborating_projects', blank=True)
     project_name = models.CharField(max_length=50)
-    background_image = models.CharField(max_length=200, blank=True, null=True)
+    background_image = models.CharField(max_length=200, blank=True, null=True, default='../src/assets/defaultBackground.jpg')
     color_scheme = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
@@ -31,11 +31,10 @@ class Invitation(models.Model):
     sender = models.ForeignKey(User, related_name='sent_invitations', on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name='received_invitations', on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('accepted', 'Accepted'), ('declined', 'Declined')], default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.sender} invites {self.receiver} to {self.project} - {self.status}"
+        return f"{self.sender} invites {self.receiver} to {self.project}"
 
 class List(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='lists')

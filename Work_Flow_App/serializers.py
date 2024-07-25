@@ -42,10 +42,12 @@ class InvitationSerializer(serializers.ModelSerializer):
     sender = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     receiver = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     project = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all())
+    sender_username = serializers.CharField(source='sender.user_name', read_only=True)
+    project_name = serializers.CharField(source='project.project_name', read_only=True)
 
     class Meta:
         model = Invitation
-        fields = ('id', 'sender', 'receiver', 'project', 'status', 'created_at')
+        fields = ('id', 'sender', 'receiver', 'project', 'created_at', 'sender_username', 'project_name')
 
 class ProjectCollaborationSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
@@ -56,11 +58,8 @@ class ProjectCollaborationSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), write_only=True)
-
     collaborators = ProjectCollaborationSerializer(source='projectcollaboration_set', many=True, read_only=True)
-    
     lists = ListSerializer(many=True, read_only=True)
-
     project_url = serializers.ModelSerializer.serializer_url_field(view_name='project_detail')
 
     class Meta:

@@ -1,5 +1,8 @@
 from django.shortcuts import render
 from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.exceptions import NotFound
 from .models import User, Project, ProjectCollaboration, List, Task, ChecklistItem, Invitation
 from .serializers import UserSerializer, ProjectSerializer, ProjectCollaborationSerializer, ListSerializer, TaskSerializer, ChecklistItemSerializer, InvitationSerializer
@@ -40,11 +43,11 @@ class InvitationRequest(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user_id = self.request.query_params.get('user_id')
-        if user_id is not None:
+        if user_id:
             try:
                 user = User.objects.get(pk=user_id)
             except User.DoesNotExist:
-                raise Http404("User does not exist")
+                raise NotFound("User does not exist")
             return Invitation.objects.filter(receiver=user)
         else:
             return Invitation.objects.none()
@@ -52,6 +55,28 @@ class InvitationRequest(generics.ListCreateAPIView):
 class InvitationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Invitation.objects.all()
     serializer_class = InvitationSerializer
+
+class HandleInvitation(APIView):
+    def patch(self, request, pk):
+        try:
+            invitation = Invitation.objects.get(pk=pk)
+            # Add receiver to the project's collaborators
+            project = invitation.project
+            project.collaborators.add(invitation.receiver)
+            project.save()
+            # Delete the invitation after acceptance
+            invitation.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Invitation.DoesNotExist:
+            return Response({"error": "Invitation not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk):
+        try:
+            invitation = Invitation.objects.get(pk=pk)
+            invitation.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Invitation.DoesNotExist:
+            return Response({"error": "Invitation not found."}, status=status.HTTP_404_NOT_FOUND)
 
 class ListList(generics.ListCreateAPIView):
     queryset = List.objects.all()
