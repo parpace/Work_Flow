@@ -86,8 +86,7 @@ export default function UserHome () {
     }
     
     return (
-        <div>
-            <h1>User Home Page</h1>
+        <div className="userHome">
             <button onClick={toggleCreateNewProject}>Create New Project</button>
             {showCreateNew && (
                 <form className="newProjectForm" onSubmit={handleSubmitNewProject}>
@@ -108,28 +107,32 @@ export default function UserHome () {
                 <button className="invitationsButton" onClick={toggleShowInvites}>Invitations</button>
             )}
             {showInvites && (
-                <ul className="invitationsList">
+                <div className="invitationsList">
                     {invitations.map(invitation => (
-                        <li className="invitation" key={invitation.id}>
+                        <div className="invitation" key={invitation.id}>
                             <button onClick={() => handleInvitations(invitation.id, 'accept')}>Accept</button>
                             <button onClick={() => handleInvitations(invitation.id, 'decline')}>Decline</button>
                             <h2>{invitation.sender_username} invited you to collaborate on {invitation.project_name}</h2>
-                        </li>
+                        </div>
                     ))}
-                </ul>
+                </div>
             )}
-            <h2>My Projects</h2>
-            <ul>
-                {ownedProjects.map(project => (
-                    <li key={project.id} onClick={() => navigate(`/project/${project.id}`)}>{project.project_name}</li>
-                ))}
-            </ul>
-            <h2>Collaborating</h2>
-            <ul>
-                {collaboratorProjects.map(project => (
-                    <li key={project.id} onClick={() => navigate(`/project/${project.id}`)}>{project.project_name}</li>
-                ))}
-            </ul>
+            <div className="ownedBoardsContainer">
+                <h2 className="ownedBoardsTitle">Owned Boards</h2>
+                <div className="ownedBoards">
+                    {ownedProjects.map(project => (
+                        <div className="ownedBoardDiv" key={project.id} onClick={() => navigate(`/project/${project.id}`)}>{project.project_name}</div>
+                    ))}
+                </div>
+            </div>
+            <div className="guestBoardsContainer">
+                <h2 className="guestBoardsTitle">Guest Boards</h2>
+                <div className="guestBoards">
+                    {collaboratorProjects.map(project => (
+                        <div className="guestBoardDiv" key={project.id} onClick={() => navigate(`/project/${project.id}`)}>{project.project_name}</div>
+                    ))}
+                </div>
+            </div>
         </div>
     )
 }

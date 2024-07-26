@@ -1,19 +1,140 @@
 #root {
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  background-color: rgb(237, 232, 245, .8);
+  font-family: Arial, sans-serif;
 }
 
+/* Header */
 .header {
-  background-color: rgba(0, 195, 255, 0.5);
+  padding-left: .5%;
+  padding-right: 1%;
+  background-color: rgb(112, 145, 230, .7);
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
+.headerRightDiv {
+  display: flex;
+  align-items: center;
+}
+
+.headerUsername {
+  margin-right: 15px;
+}
+
 .userImg {
-  width: 70px;
-  height: 70px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+/* User Home */
+.ownedBoardsContainer, .guestBoardsContainer {
+  background-color: rgb(61, 82, 160, .3);
+  margin-left: 1%;
+  margin-right: 40%;
+  padding-left: 1%;
+}
+
+.ownedBoardsTitle, .guestBoardsTitle {
+  margin-bottom: 0;
+}
+
+.ownedBoards, .guestBoards {
+  margin-left: 3%;
+}
+
+.ownedBoardDiv:hover, .guestBoardDiv:hover {
+  background-color: rgba(61, 82, 160, 0.3);
+  cursor: pointer;
+}
+
+/* Project Management */
+.projectPage {
+  display: flex;
+  height: 100vh;
+}
+
+.projectManagement {
+  background-color: rgb(112, 145, 230, .3);
+  padding: 1rem;
+  width: 250px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding: 0%;
+}
+
+.projectSettings div, .projectManagementDiv {
+  padding: 1%;
+  padding-left: 10%;
+}
+
+.projectName {
+  padding-left: 3%;
+  margin-bottom: 0%;
+}
+
+.yourBoards {
+  padding-left: 3%;
+  padding-top: 5%;
+  margin-bottom: 0%;
+}
+
+.projectSettings div:hover, .projectManagementDiv:hover {
+  background-color: rgba(61, 82, 160, 0.3);
+  cursor: pointer;
+}
+
+/* Project Board */
+.projectBoard {
+  display: flex;
+  flex-grow: 1;
+  padding: 1rem;
+  overflow-x: auto;
+  align-items: flex-start;
+}
+
+.lists {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.list {
+  background-color: rgb(173, 187, 218, .7);
+  border-radius: 10%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  width: 300px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.tasks {
+  margin-top: 1rem;
+}
+
+.task {
+  background-color: #fff;
+  border-radius: 10%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.checklistItems {
+  margin-top: 0.5rem;
+  padding-left: 1rem;
+}
+
+.add-list {
+  background-color: #e0e0e0;
+  border-radius: 20%;
+  padding: 0.5rem;
+  text-align: center;
+  cursor: pointer;
+  width: 300px;
+  height: fit-content;
 }

@@ -35,7 +35,10 @@ export default function Header () {
                         <h3 onClick={() => navigate(`/home/${userData.user_name}`)}>Work_Flow</h3>
                     </div>
                     <div className="headerRight">
-                        <img className='userImg' onClick={toggleUserMenu} src={userData.user_img}/>
+                        <div className='headerRightDiv'>
+                            <h4 className='headerUsername'>{userData.user_name}</h4>
+                            <img className='userImg' onClick={toggleUserMenu} src={userData.user_img}/>
+                        </div>
                         {showUserMenu && (
                             <ul className="dropdown">
                                 <li onClick={toggleSettingsMenu}>settings</li>

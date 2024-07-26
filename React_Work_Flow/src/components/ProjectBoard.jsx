@@ -47,15 +47,15 @@ export default function ProjectBoard (props) {
 
     return (
         <div className="projectBoard">
-            {lists && (
+            {lists ? (
                 <div className="lists">
                     {lists.map(list => (
-                        <div key={list.id}>
+                        <div className="list" key={list.id}>
                             <h3>{list.list_name}</h3>
                             {tasksByList[list.id] && (
                                 <div className="tasks">
                                     {tasksByList[list.id].map(task => (
-                                        <div key={task.id}>
+                                        <div className="task" key={task.id}>
                                             <h4>{task.task_name}</h4>
                                             {checklistItemsByTask[task.id] && (
                                                 <div className="checklistItems">
@@ -68,13 +68,20 @@ export default function ProjectBoard (props) {
                                     ))}
                                 </div>
                             )}
+                            <div>
+                                <h4 className="add-task">+ Add a task</h4>
+                            </div>
                         </div>
                     ))}
+                    <div className="add-list">
+                        <h4>+ Add another list</h4>
+                    </div>
+                </div>
+            ) : (
+                <div className="add-list">
+                    <h4>+ Make a list</h4>
                 </div>
             )}
-            <div>
-                <h4>+ Add another list</h4>
-            </div>
         </div>
     )
 }

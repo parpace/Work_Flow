@@ -8,7 +8,7 @@ export default function ProjectPage () {
 
     return (
         <div className='projectPage'>
-            <ProjectManagement loggedInUser={loggedInUser}/>
+            <ProjectManagement projectId={projectId} loggedInUser={loggedInUser}/>
             <ProjectBoard projectId={projectId} loggedInUser={loggedInUser}/>
         </div>
     )
