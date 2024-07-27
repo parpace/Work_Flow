@@ -6,6 +6,8 @@ export default function ProjectBoard (props) {
     const [lists, setLists] = useState([])
     const [tasksByList, setTasksByList] = useState({})
     const [checklistItemsByTask, setChecklistItemsByTask] = useState({})
+    const [listFormState, setListFormState] = useState({listName: ''})
+    const [showCreateList, setShowCreateList] = useState(false)
 
     useEffect(() => {
         const getListsAndTasks = async () => {
@@ -45,6 +47,32 @@ export default function ProjectBoard (props) {
         getListsAndTasks()
     }, [projectId])
 
+    const toggleCreateList = () => {
+        setShowCreateList(!showCreateList)
+    }
+
+    const handleListChange = (e) => {
+        setListFormState({
+            ...listFormState,
+            [e.target.name] : e.target.value
+        })
+    }
+
+    const handleSubmitNewList = async (e) => {
+        e.preventDefault()
+        try {
+            const response = await axios.post('http://127.0.0.1:8000/lists/', {
+                project_id: projectId,
+                list_name: listFormState.listName
+            })
+            setLists([...lists, response.data])
+            setListFormState({projectName: '', backgroundImg: ''})
+            setShowCreateList(false)
+        } catch (error) {
+            console.error('Error creating new list:', error)
+        }
+    }
+
     return (
         <div className="projectBoard">
             {lists ? (
@@ -74,7 +102,17 @@ export default function ProjectBoard (props) {
                         </div>
                     ))}
                     <div className="add-list">
-                        <h4>+ Add another list</h4>
+                        <h4 onClick={toggleCreateList}>+ Add another list</h4>
+                        {showCreateList && (
+                            <form className="newListForm" onSubmit={handleSubmitNewList}>
+                                <div className="newListName">
+                                    <input type="text" name="listName" placeholder="Name your list" onChange={handleListChange} value={listFormState.listName} />
+                                </div>
+                                <div className="submitListContainer">
+                                    <button className="submitNewListBtn" type="submit">Add list</button>
+                                </div>
+                            </form>
+                        )}
                     </div>
                 </div>
             ) : (

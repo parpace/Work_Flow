@@ -37,11 +37,11 @@ export default function UserHome () {
         getUserData(loggedInUser)
     }, [loggedInUser])
 
-    const toggleCreateNewProject = async () => {
+    const toggleCreateNewProject = () => {
         setShowCreateNew(!showCreateNew)
     }
 
-    const toggleShowInvites = async () => {
+    const toggleShowInvites = () => {
         setShowInvites(!showInvites)
     }
 
@@ -93,12 +93,10 @@ export default function UserHome () {
                     <div className="newProjectName">
                         <input type="text" name="projectName" placeholder="Name Your Project" onChange={handleChange} value={formState.projectName} />
                     </div>
-
                     <div className="newProjectBackground">
                         <input type="text" name="backgroundImg" placeholder="Enter a url" onChange={handleChange} value={formState.backgroundImg} />
                     </div>
-
-                    <div className="submitBtnContainer">
+                    <div className="submitProjectContainer">
                         <button className="submitNewProjectBtn" type="submit">Submit</button>
                     </div>
                 </form>

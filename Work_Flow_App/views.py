@@ -20,7 +20,7 @@ class ProjectList(generics.ListCreateAPIView):
     serializer_class = ProjectSerializer
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save()
 
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
@@ -37,6 +37,9 @@ class ProjectCollaborationDetail(generics.RetrieveUpdateDestroyAPIView):
 class InvitationList(generics.ListCreateAPIView):
     queryset = Invitation.objects.all()
     serializer_class = InvitationSerializer
+
+    def perform_create(self, serializer):
+        serializer.save()
 
 class InvitationRequest(generics.ListCreateAPIView):
     serializer_class = InvitationSerializer
@@ -82,6 +85,9 @@ class ListList(generics.ListCreateAPIView):
     queryset = List.objects.all()
     serializer_class = ListSerializer
 
+    def perform_create(self, serializer):
+        serializer.save()
+
 class ListDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = List.objects.all()
     serializer_class = ListSerializer
@@ -97,6 +103,9 @@ class TaskDetail(generics.RetrieveUpdateDestroyAPIView):
 class ChecklistItemList(generics.ListCreateAPIView):
     queryset = ChecklistItem.objects.all()
     serializer_class = ChecklistItemSerializer
+
+    def perform_create(self, serializer):
+        serializer.save()
 
 class ChecklistItemDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = ChecklistItem.objects.all()
