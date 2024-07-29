@@ -2,12 +2,14 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 
 export default function ProjectBoard (props) {
-    const { projectId, loggedInUser } = props
+    const { projectId, projectMembers } = props
     const [lists, setLists] = useState([])
     const [tasksByList, setTasksByList] = useState({})
     const [checklistItemsByTask, setChecklistItemsByTask] = useState({})
-    const [listFormState, setListFormState] = useState({listName: ''})
+    const [listFormState, setListFormState] = useState({ listName: '' })
+    const [taskFormState, setTaskFormState] = useState({ taskName: '', assignedUsers: [] })
     const [showCreateList, setShowCreateList] = useState(false)
+    const [showCreateTask, setShowCreateTask] = useState(false)
 
     useEffect(() => {
         const getListsAndTasks = async () => {
@@ -47,16 +49,11 @@ export default function ProjectBoard (props) {
         getListsAndTasks()
     }, [projectId])
 
-    const toggleCreateList = () => {
-        setShowCreateList(!showCreateList)
-    }
+    const toggleCreateList = () => setShowCreateList(!showCreateList)
+    const toggleCreateTask = () => setShowCreateTask(!showCreateTask)
 
-    const handleListChange = (e) => {
-        setListFormState({
-            ...listFormState,
-            [e.target.name] : e.target.value
-        })
-    }
+    const handleListChange = (e) => setListFormState({ ...listFormState, [e.target.name] : e.target.value })
+    const handleTaskChange = (e) => setTaskFormState({ ...taskFormState, [e.target.name] : e.target.value })
 
     const handleSubmitNewList = async (e) => {
         e.preventDefault()
@@ -66,10 +63,29 @@ export default function ProjectBoard (props) {
                 list_name: listFormState.listName
             })
             setLists([...lists, response.data])
-            setListFormState({projectName: '', backgroundImg: ''})
+            setListFormState({listName: ''})
             setShowCreateList(false)
         } catch (error) {
             console.error('Error creating new list:', error)
+        }
+    }
+
+    const handleSubmitNewTask = async (e, listId) => {
+        e.preventDefault()
+        try {
+            const response = await axios.post('http://127.0.0.1:8000/tasks/', {
+                list_id: listId,
+                task_name: taskFormState.taskName,
+                assigned_users: taskFormState.assignedUsers
+            })
+            setTasksByList({
+                ...tasksByList,
+                [listId]: [...(tasksByList[listId] || []), response.data]
+            })
+            setTaskFormState({ taskName: '', assignedUsers: [] })
+            setShowCreateTask(false)
+        } catch (error) {
+            console.error('Error creating new task:', error)
         }
     }
 
@@ -96,8 +112,36 @@ export default function ProjectBoard (props) {
                                     ))}
                                 </div>
                             )}
-                            <div>
-                                <h4 className="add-task">+ Add a task</h4>
+                            <div className="add-task">
+                                <h4 onClick={toggleCreateTask}>+ Add a task</h4>
+                                {showCreateTask && (
+                                    <form className="newTaskForm" onSubmit={(e) => handleSubmitNewTask(e, list.id)}>
+                                        <div className="newTaskName">
+                                            <input type="text" name="taskName" placeholder="Name your task" onChange={handleTaskChange} value={taskFormState.taskName} />
+                                        </div>
+                                        <div className="newTaskAssignedUsers">
+                                            <select multiple name="assignedUsers"
+                                                onChange={(e) => {
+                                                    const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
+                                                    setTaskFormState({
+                                                        ...taskFormState,
+                                                        assignedUsers: selectedOptions
+                                                    });
+                                                }}
+                                                value={taskFormState.assignedUsers}
+                                            >
+                                                {projectMembers.map(member => (
+                                                    <option key={member.data.id} value={member.data.id}>
+                                                        {member.data.user_name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="submitTaskContainer">
+                                            <button className="submitNewTaskBtn" type="submit">Add Task</button>
+                                        </div>
+                                    </form>
+                                )}
                             </div>
                         </div>
                     ))}
@@ -117,7 +161,17 @@ export default function ProjectBoard (props) {
                 </div>
             ) : (
                 <div className="add-list">
-                    <h4>+ Make a list</h4>
+                    <h4 onClick={toggleCreateList}>+ Make a list</h4>
+                    {showCreateList && (
+                            <form className="newListForm" onSubmit={handleSubmitNewList}>
+                                <div className="newListName">
+                                    <input type="text" name="listName" placeholder="Name your list" onChange={handleListChange} value={listFormState.listName} />
+                                </div>
+                                <div className="submitListContainer">
+                                    <button className="submitNewListBtn" type="submit">Add list</button>
+                                </div>
+                            </form>
+                        )}
                 </div>
             )}
         </div>

@@ -57,7 +57,7 @@ class ProjectCollaborationSerializer(serializers.ModelSerializer):
         fields = ('user', 'project', 'can_edit')
 
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
-    owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), write_only=True)
+    owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     collaborators = ProjectCollaborationSerializer(source='projectcollaboration_set', many=True, read_only=True)
     lists = ListSerializer(many=True, read_only=True)
     project_url = serializers.ModelSerializer.serializer_url_field(view_name='project_detail')
