@@ -3,7 +3,7 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, ValidationError
 from .models import User, Project, ProjectCollaboration, List, Task, ChecklistItem, Invitation
 from .serializers import UserSerializer, ProjectSerializer, ProjectCollaborationSerializer, ListSerializer, TaskSerializer, ChecklistItemSerializer, InvitationSerializer
 
@@ -93,11 +93,20 @@ class ListDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ListSerializer
 
 class TaskList(generics.ListCreateAPIView):
-    queryset = Task.objects.all()
     serializer_class = TaskSerializer
 
+    def get_queryset(self):
+        list_id = self.kwargs.get('pk')
+        if list_id:
+            return Task.objects.filter(list_id=list_id)
+        return Task.objects.all()
+
     def perform_create(self, serializer):
-        serializer.save()
+        try:
+            serializer.save()
+        except ValidationError as e:
+            print(f"Validation Error: {e}")
+            raise e
 
 class TaskDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Task.objects.all()

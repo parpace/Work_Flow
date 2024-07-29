@@ -7,9 +7,9 @@ export default function ProjectBoard (props) {
     const [tasksByList, setTasksByList] = useState({})
     const [checklistItemsByTask, setChecklistItemsByTask] = useState({})
     const [listFormState, setListFormState] = useState({ listName: '' })
-    const [taskFormState, setTaskFormState] = useState({ taskName: '', assignedUsers: [] })
+    const [taskFormStates, setTaskFormStates] = useState({ taskName: '', assignedUsers: [] })
     const [showCreateList, setShowCreateList] = useState(false)
-    const [showCreateTask, setShowCreateTask] = useState(false)
+    const [currentListId, setCurrentListId] = useState(null)
 
     useEffect(() => {
         const getListsAndTasks = async () => {
@@ -27,6 +27,7 @@ export default function ProjectBoard (props) {
                     acc[listId] = tasks
                     return acc
                 }, {})
+                // console.log('tasks by list:', tasksByList)
 
                 const checklistItems = Object.values(tasksByList).flat().map(async (task) => {
                     const checklistResponse = await axios.get(`http://127.0.0.1:8000/tasks/${task.id}/checklist-items/`)
@@ -50,10 +51,16 @@ export default function ProjectBoard (props) {
     }, [projectId])
 
     const toggleCreateList = () => setShowCreateList(!showCreateList)
-    const toggleCreateTask = () => setShowCreateTask(!showCreateTask)
+    const toggleCreateTask = (listId) => setCurrentListId(listId === currentListId ? null : listId)
 
     const handleListChange = (e) => setListFormState({ ...listFormState, [e.target.name] : e.target.value })
-    const handleTaskChange = (e) => setTaskFormState({ ...taskFormState, [e.target.name] : e.target.value })
+    const handleTaskChange = (e, listId) => {
+        const listTaskState = taskFormStates[listId] || { taskName: '', description: '', assignedUsers: [] }
+        setTaskFormStates({
+            ...taskFormStates,
+            [listId]: { ...listTaskState, [e.target.name]: e.target.value }
+        })
+    }
 
     const handleSubmitNewList = async (e) => {
         e.preventDefault()
@@ -73,25 +80,35 @@ export default function ProjectBoard (props) {
     const handleSubmitNewTask = async (e, listId) => {
         e.preventDefault()
         try {
+            // console.log({
+            //     list_id: listId,
+            //     task_name: taskFormState.taskName,
+            //     assigned_users: taskFormState.assignedUsers
+            // })
+            const taskFormState = taskFormStates[listId] || {}
+            const assignedUserIds = taskFormState.assignedUsers.map(userId => parseInt(userId, 10))
             const response = await axios.post('http://127.0.0.1:8000/tasks/', {
                 list_id: listId,
                 task_name: taskFormState.taskName,
-                assigned_users: taskFormState.assignedUsers
+                description: taskFormState.description,
+                assigned_users: assignedUserIds
             })
             setTasksByList({
                 ...tasksByList,
                 [listId]: [...(tasksByList[listId] || []), response.data]
             })
-            setTaskFormState({ taskName: '', assignedUsers: [] })
-            setShowCreateTask(false)
+            setTaskFormStates({ taskName: '', assignedUsers: [] })
+            setCurrentListId(null)
         } catch (error) {
             console.error('Error creating new task:', error)
         }
     }
 
+    const userMap = new Map(projectMembers.map(member => [member.data.id, member.data]))
+
     return (
         <div className="projectBoard">
-            {lists ? (
+            {lists.length > 0 ? (
                 <div className="lists">
                     {lists.map(list => (
                         <div className="list" key={list.id}>
@@ -100,7 +117,20 @@ export default function ProjectBoard (props) {
                                 <div className="tasks">
                                     {tasksByList[list.id].map(task => (
                                         <div className="task" key={task.id}>
-                                            <h4>{task.task_name}</h4>
+                                            <div className="taskNameAndUsers">
+                                                <h4>{task.task_name}</h4>
+                                                <div className="assignedUsers">
+                                                    {task.assigned_users.map(userId => {
+                                                        const user = userMap.get(userId)
+                                                        return user ? (
+                                                            <div key={userId} className="assignedUser">
+                                                                <img src={user.user_img} alt={user.user_name} className="userImg" />
+                                                                <p className="hiddenUserName">{user.user_name}</p>
+                                                            </div>
+                                                        ) : null
+                                                    })}
+                                                </div>
+                                            </div>
                                             {checklistItemsByTask[task.id] && (
                                                 <div className="checklistItems">
                                                     {checklistItemsByTask[task.id].map(item => (
@@ -113,22 +143,29 @@ export default function ProjectBoard (props) {
                                 </div>
                             )}
                             <div className="add-task">
-                                <h4 onClick={toggleCreateTask}>+ Add a task</h4>
-                                {showCreateTask && (
+                                <h4 onClick={() => toggleCreateTask(list.id)}>+ Add a task</h4>
+                                {currentListId === list.id && (
                                     <form className="newTaskForm" onSubmit={(e) => handleSubmitNewTask(e, list.id)}>
                                         <div className="newTaskName">
-                                            <input type="text" name="taskName" placeholder="Name your task" onChange={handleTaskChange} value={taskFormState.taskName} />
+                                            <input type="text" name="taskName" placeholder="Name your task" 
+                                                onChange={(e) => handleTaskChange(e, list.id)}
+                                                value={taskFormStates[list.id]?.taskName || ''} />
+                                        </div>
+                                        <div className="newTaskDescription">
+                                            <textarea name="description" placeholder="Task description" 
+                                                onChange={(e) => handleTaskChange(e, list.id)}
+                                                value={taskFormStates[list.id]?.description || ''} />
                                         </div>
                                         <div className="newTaskAssignedUsers">
                                             <select multiple name="assignedUsers"
                                                 onChange={(e) => {
-                                                    const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
-                                                    setTaskFormState({
-                                                        ...taskFormState,
-                                                        assignedUsers: selectedOptions
-                                                    });
+                                                    const selectedOptions = Array.from(e.target.selectedOptions).map(option => parseInt(option.value, 10))
+                                                    setTaskFormStates({
+                                                        ...taskFormStates,
+                                                        [list.id]: { ...taskFormStates[list.id], assignedUsers: selectedOptions }
+                                                    })
                                                 }}
-                                                value={taskFormState.assignedUsers}
+                                                value={taskFormStates[list.id]?.assignedUsers || []}
                                             >
                                                 {projectMembers.map(member => (
                                                     <option key={member.data.id} value={member.data.id}>

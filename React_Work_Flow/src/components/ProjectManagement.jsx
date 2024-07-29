@@ -7,7 +7,7 @@ export default function ProjectManagement (props) {
     // const [currentProject, setCurrentProject] = useState({})
     // const [projectMembers, setProjectMembers] = useState([])
     const [showMembers, setShowMembers] = useState(false)
-    const navigate = useNavigate
+    const navigate = useNavigate()
     
     // useEffect(() => {
     //     const getUserData = async (userId) => {
@@ -72,7 +72,7 @@ export default function ProjectManagement (props) {
                             {member.status === 'owner' && (
                                 <p>Owner</p>
                             )}
-                            <img src={member.data.user_img}/>
+                            <img className="userImg" src={member.data.user_img}/>
                         </div>
                     ))}
                     {currentProject.owner === loggedInUser && (

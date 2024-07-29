@@ -1,6 +1,6 @@
 #root {
   margin: 0 auto;
-  background-color: rgb(237, 232, 245, .8);
+  background-color: rgb(175, 221, 229, .7);
   font-family: Arial, sans-serif;
 }
 
@@ -8,7 +8,8 @@
 .header {
   padding-left: .5%;
   padding-right: 1%;
-  background-color: rgb(112, 145, 230, .7);
+  background-color: rgb(0, 49, 53, .9);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -24,6 +25,7 @@
 }
 
 .userImg {
+  display: block;
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -58,7 +60,8 @@
 }
 
 .projectManagement {
-  background-color: rgb(112, 145, 230, .3);
+  background-color: rgb(2, 73, 80, .9);
+  color: #fff;
   padding: 1rem;
   width: 250px;
   box-sizing: border-box;
@@ -83,7 +86,7 @@
 }
 
 .projectSettings div:hover, .projectManagementDiv:hover {
-  background-color: rgba(61, 82, 160, 0.3);
+  background-color: rgb(0, 49, 53, .9);
   cursor: pointer;
 }
 
@@ -103,7 +106,8 @@
 }
 
 .list {
-  background-color: rgb(173, 187, 218, .7);
+  background-color: rgb(46, 57, 68, .7);
+  color: #fff;
   border-radius: 10%;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   padding: 1rem;
@@ -118,10 +122,40 @@
 
 .task {
   background-color: #fff;
+  color: darkslategray;
   border-radius: 10%;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   padding: 0.5rem;
   margin-bottom: 0.5rem;
+}
+
+.taskNameAndUsers {
+  display: flex;
+  justify-content: space-between;
+}
+
+.assignedUser {
+  position: relative;
+  display: inline-block;
+}
+
+.hiddenUserName {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgb(46, 57, 68);
+  color: #fff;
+  padding: 5px;
+  border-radius: 5px;
+  white-space: nowrap;
+  z-index: 1;
+  font-size: 12px;
+}
+
+.assignedUser:hover .hiddenUserName {
+  display: block; /* Show on hover */
 }
 
 .checklistItems {
