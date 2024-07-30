@@ -104,6 +104,31 @@ export default function ProjectBoard (props) {
         }
     }
 
+    const deleteList = async (listId) => {
+        try {
+            await axios.delete(`http://127.0.0.1:8000/lists/${listId}/`)
+            setLists(prevLists => prevLists.filter(list => list.id !== listId))
+        } catch (error) {
+            console.error('Error deleting list:', error)
+        }
+    }
+    const deleteTask = async (taskId) => {
+        try {
+            await axios.delete(`http://127.0.0.1:8000/tasks/${taskId}/`)
+            setTasksByList(prevTasksByList => {
+                const updatedTasksByList = { ...prevTasksByList }
+                
+                for (const listId in updatedTasksByList) {
+                    updatedTasksByList[listId] = updatedTasksByList[listId].filter(task => task.id !== taskId)
+                }
+                
+                return updatedTasksByList
+            })
+        } catch (error) {
+            console.error('Error deleting task:', error)
+        }
+    }
+
     const userMap = new Map(projectMembers.map(member => [member.data.id, member.data]))
 
     return (
@@ -138,6 +163,7 @@ export default function ProjectBoard (props) {
                                                     ))}
                                                 </div>
                                             )}
+                                            <div className="deleteTask" onClick={() => deleteTask(task.id)}>Delete</div>
                                         </div>
                                     ))}
                                 </div>
@@ -180,6 +206,7 @@ export default function ProjectBoard (props) {
                                     </form>
                                 )}
                             </div>
+                            <div className="deleteList" onClick={() => deleteList(list.id)}>Delete</div>
                         </div>
                     ))}
                     <div className="add-list">
