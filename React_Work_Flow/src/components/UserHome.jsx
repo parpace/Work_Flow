@@ -80,6 +80,7 @@ export default function UserHome () {
             }
 
             setInvitations(invitations.filter(invite => invite.id !== invitationId))
+            window.location.reload()
         } catch (error) {
             console.error('Error handling invitation:', error)
         }
@@ -89,17 +90,21 @@ export default function UserHome () {
         <div className="userHome">
             <button onClick={toggleCreateNewProject}>Create New Project</button>
             {showCreateNew && (
-                <form className="newProjectForm" onSubmit={handleSubmitNewProject}>
-                    <div className="newProjectName">
-                        <input type="text" name="projectName" placeholder="Name Your Project" onChange={handleChange} value={formState.projectName} />
+                <div className="modal" onClick={toggleCreateNewProject}>
+                    <div className="modalContent" onClick={(e) => e.stopPropagation()}>
+                        <form className="newProjectForm" onSubmit={handleSubmitNewProject}>
+                            <div className="newProjectName">
+                                <input type="text" name="projectName" placeholder="Name Your Project" onChange={handleChange} value={formState.projectName} />
+                            </div>
+                            <div className="newProjectBackground">
+                                <input type="text" name="backgroundImg" placeholder="Enter a url" onChange={handleChange} value={formState.backgroundImg} />
+                            </div>
+                            <div className="submitProjectContainer">
+                                <button className="submitNewProjectBtn" type="submit">Submit</button>
+                            </div>
+                        </form>
                     </div>
-                    <div className="newProjectBackground">
-                        <input type="text" name="backgroundImg" placeholder="Enter a url" onChange={handleChange} value={formState.backgroundImg} />
-                    </div>
-                    <div className="submitProjectContainer">
-                        <button className="submitNewProjectBtn" type="submit">Submit</button>
-                    </div>
-                </form>
+                </div>
             )}
             {showInviteNotification && (
                 <button className="invitationsButton" onClick={toggleShowInvites}>Invitations</button>

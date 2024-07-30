@@ -5,13 +5,37 @@ export default function ProjectManagement (props) {
     const { loggedInUser, userProjects, currentProject, projectMembers } = props
     const [showMembers, setShowMembers] = useState(false)
     const [showAddMember, setShowAddMember] = useState(false)
+    const [formState, setFormState] = useState({})
     const navigate = useNavigate()
 
-    const toggleShowMembers = async () => {
-        setShowMembers(!showMembers)
+    const toggleShowMembers = async () => setShowMembers(!showMembers)
+    const toggleShowAddMember = () => setShowAddMember(!showAddMember)
+
+    const handleSubmitNewInvite = async () => {
+        e.preventDefault()
+        try {
+            const usersResponse = await axios.get('http://127.0.0.1:8000/users/')
+            const users = usersResponse.data
+            const userToInvite = users.find(user => user.user_name === formState.userName)
+
+            if (userToInvite) {
+                const invitationResponse = await axios.post('http://127.0.0.1:8000/invitations/', {
+                    sender: loggedInUser,
+                    receiver: userToInvite.id,
+                    project: currentProject.id
+                })
+                if (invitationResponse.status === 201) {
+                    alert('Invitation sent successfully!')
+                }
+            } else {
+                alert('Username does not exist.')
+            }
+        } catch (error) {
+            console.error('Error creating new project:', error)
+        }
     }
 
-    const toggleShowAddMember = () => setShowAddMember(!showAddMember)
+    const handleChange = (e) => setFormState({ ...formState, [e.target.name] : e.target.value })
     
     return (
         <div className="projectManagement">
@@ -38,7 +62,21 @@ export default function ProjectManagement (props) {
                         </div>
                     ))}
                     {currentProject.owner === parseInt(loggedInUser, 10) && (
-                        <div className="addMember" onClick={toggleShowAddMember}>+ Add a member</div>
+                        <>
+                            <div className="addMember" onClick={toggleShowAddMember}>+ Add a member</div>
+                            {showAddMember && (
+                                <div className="modal" onClick={toggleShowAddMember}>
+                                    <div className="modalContent" onClick={(e) => e.stopPropagation()}>
+                                        <form className="sendInviteForm" onSubmit={handleSubmitNewInvite}>
+                                            <div className="addMemberInput">
+                                                <input type="text" name="userName" placeholder="Enter a username" onChange={handleChange} value={formState.userName || ''} />
+                                            </div>
+                                            <button type="submit">Send Invite</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             )}

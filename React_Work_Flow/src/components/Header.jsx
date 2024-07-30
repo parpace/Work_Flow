@@ -26,6 +26,12 @@ export default function Header () {
     const toggleSettingsMenu = () => {
         setShowSettingsMenu(!showSettingsMenu)
     }
+
+    const handleLogout = () => {
+        localStorage.removeItem('loggedInUser')
+        setShowUserMenu(false)
+        navigate(`/`)
+    }
     
     return (
         <div className="header">

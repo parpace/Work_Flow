@@ -26,7 +26,6 @@ export default function Login () {
         try {
             const response = await axios.get(`http://127.0.0.1:8000/users/`)
             setUsers(response.data)
-            console.log(response.data)
         } catch (error) {
             console.error('Could not find users', error)
         }
