@@ -46,10 +46,10 @@ export default function Header () {
                             <img className='userImg' onClick={toggleUserMenu} src={userData.user_img}/>
                         </div>
                         {showUserMenu && (
-                            <ul className="dropdown">
-                                <li onClick={toggleSettingsMenu}>settings</li>
-                                <li onClick={handleLogout}>Logout</li>
-                            </ul>
+                            <div className="dropdown">
+                                <div onClick={toggleSettingsMenu}>settings</div>
+                                <div onClick={handleLogout}>Logout</div>
+                            </div>
                         )}
                     </div>
                     {showSettingsMenu && (

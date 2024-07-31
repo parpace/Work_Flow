@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import axios from "axios"
 
 export default function ProjectManagement (props) {
     const { loggedInUser, userProjects, currentProject, projectMembers } = props
@@ -11,7 +12,7 @@ export default function ProjectManagement (props) {
     const toggleShowMembers = async () => setShowMembers(!showMembers)
     const toggleShowAddMember = () => setShowAddMember(!showAddMember)
 
-    const handleSubmitNewInvite = async () => {
+    const handleSubmitNewInvite = async (e) => {
         e.preventDefault()
         try {
             const usersResponse = await axios.get('http://127.0.0.1:8000/users/')
@@ -26,6 +27,8 @@ export default function ProjectManagement (props) {
                 })
                 if (invitationResponse.status === 201) {
                     alert('Invitation sent successfully!')
+                    setFormState({ userName: '' })
+                    setShowAddMember(false)
                 }
             } else {
                 alert('Username does not exist.')
@@ -52,18 +55,9 @@ export default function ProjectManagement (props) {
             </div>
             {showMembers && (
                 <div className="membersList">
-                    {projectMembers.map((member) => (
-                        <div className="member" key={member.data.id}>
-                            <h4>{member.data.user_name}</h4>
-                            <div>
-                                {member.status === 'owner' && <p>Owner</p> }
-                                <img className="userImg" src={member.data.user_img}/>
-                            </div>
-                        </div>
-                    ))}
                     {currentProject.owner === parseInt(loggedInUser, 10) && (
                         <>
-                            <div className="addMember" onClick={toggleShowAddMember}>+ Add a member</div>
+                            <button className="addMember" onClick={toggleShowAddMember}>+ Add a member</button>
                             {showAddMember && (
                                 <div className="modal" onClick={toggleShowAddMember}>
                                     <div className="modalContent" onClick={(e) => e.stopPropagation()}>
@@ -78,6 +72,15 @@ export default function ProjectManagement (props) {
                             )}
                         </>
                     )}
+                    {projectMembers.map((member) => (
+                        <div className="member" key={member.data.id}>
+                            <h4>{member.data.user_name}</h4>
+                            <div>
+                                {member.status === 'owner' && <p>Owner</p> }
+                                <img className="userImg" src={member.data.user_img}/>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             )}
             <h3 className="yourBoards">Your Boards</h3>

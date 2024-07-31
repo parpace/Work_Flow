@@ -113,8 +113,13 @@ class TaskDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TaskSerializer
 
 class ChecklistItemList(generics.ListCreateAPIView):
-    queryset = ChecklistItem.objects.all()
     serializer_class = ChecklistItemSerializer
+
+    def get_queryset(self):
+        task_id = self.kwargs.get('pk')
+        if task_id:
+            return ChecklistItem.objects.filter(task_id=task_id)
+        return ChecklistItem.objects.all()
 
     def perform_create(self, serializer):
         serializer.save()

@@ -17,15 +17,13 @@ export default function UserHome () {
         const getUserData = async (userId) => {
             try {
                 const response = await axios.get(`http://127.0.0.1:8000/users/${userId}/`)
-                console.log(response.data)
                 const data = response.data
                 setOwnedProjects(data.owned_projects)
                 setCollaboratorProjects(data.collaborating_projects)
 
                 const invitationsResponse = await axios.get(`http://127.0.0.1:8000/user-invitations/?user_id=${userId}`)
                 const receivedInvitations = invitationsResponse.data
-                console.log (receivedInvitations)
-                console.log (receivedInvitations)
+                // console.log (receivedInvitations)
                 if (receivedInvitations.length > 0) {
                     setInvitations(receivedInvitations)
                     setShowInviteNotification(true)
@@ -88,52 +86,56 @@ export default function UserHome () {
     
     return (
         <div className="userHome">
-            <button onClick={toggleCreateNewProject}>Create New Project</button>
-            {showCreateNew && (
-                <div className="modal" onClick={toggleCreateNewProject}>
-                    <div className="modalContent" onClick={(e) => e.stopPropagation()}>
-                        <form className="newProjectForm" onSubmit={handleSubmitNewProject}>
-                            <div className="newProjectName">
-                                <input type="text" name="projectName" placeholder="Name Your Project" onChange={handleChange} value={formState.projectName} />
+            <div className="userHomeRight">
+                <button onClick={toggleCreateNewProject}>Create New Project</button>
+                {showCreateNew && (
+                    <div className="modal" onClick={toggleCreateNewProject}>
+                        <div className="modalContent" onClick={(e) => e.stopPropagation()}>
+                            <form className="newProjectForm" onSubmit={handleSubmitNewProject}>
+                                <div className="newProjectName">
+                                    <input type="text" name="projectName" placeholder="Name Your Project" onChange={handleChange} value={formState.projectName} />
+                                </div>
+                                <div className="newProjectBackground">
+                                    <input type="text" name="backgroundImg" placeholder="Uplaod a background image" onChange={handleChange} value={formState.backgroundImg} />
+                                </div>
+                                <div className="submitProjectContainer">
+                                    <button className="submitNewProjectBtn" type="submit">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+                {showInviteNotification && (
+                    <button className="invitationsButton" onClick={toggleShowInvites}>Invitations</button>
+                )}
+                {showInvites && (
+                    <div className="invitationsList">
+                        {invitations.map(invitation => (
+                            <div className="invitation" key={invitation.id}>
+                                <button onClick={() => handleInvitations(invitation.id, 'accept')}>Accept</button>
+                                <button onClick={() => handleInvitations(invitation.id, 'decline')}>Decline</button>
+                                <h2>{invitation.sender_username} invited you to collaborate on {invitation.project_name}</h2>
                             </div>
-                            <div className="newProjectBackground">
-                                <input type="text" name="backgroundImg" placeholder="Enter a url" onChange={handleChange} value={formState.backgroundImg} />
-                            </div>
-                            <div className="submitProjectContainer">
-                                <button className="submitNewProjectBtn" type="submit">Submit</button>
-                            </div>
-                        </form>
+                        ))}
+                    </div>
+                )}
+            </div>
+            <div className="userHomeLeft">
+                <div className="ownedBoardsContainer">
+                    <h2 className="ownedBoardsTitle">My Projects</h2>
+                    <div className="ownedBoards">
+                        {ownedProjects.map(project => (
+                            <div className="ownedBoardDiv" key={project.id} onClick={() => navigate(`/project/${project.id}`)}>{project.project_name}</div>
+                        ))}
                     </div>
                 </div>
-            )}
-            {showInviteNotification && (
-                <button className="invitationsButton" onClick={toggleShowInvites}>Invitations</button>
-            )}
-            {showInvites && (
-                <div className="invitationsList">
-                    {invitations.map(invitation => (
-                        <div className="invitation" key={invitation.id}>
-                            <button onClick={() => handleInvitations(invitation.id, 'accept')}>Accept</button>
-                            <button onClick={() => handleInvitations(invitation.id, 'decline')}>Decline</button>
-                            <h2>{invitation.sender_username} invited you to collaborate on {invitation.project_name}</h2>
-                        </div>
-                    ))}
-                </div>
-            )}
-            <div className="ownedBoardsContainer">
-                <h2 className="ownedBoardsTitle">Owned Boards</h2>
-                <div className="ownedBoards">
-                    {ownedProjects.map(project => (
-                        <div className="ownedBoardDiv" key={project.id} onClick={() => navigate(`/project/${project.id}`)}>{project.project_name}</div>
-                    ))}
-                </div>
-            </div>
-            <div className="guestBoardsContainer">
-                <h2 className="guestBoardsTitle">Guest Boards</h2>
-                <div className="guestBoards">
-                    {collaboratorProjects.map(project => (
-                        <div className="guestBoardDiv" key={project.id} onClick={() => navigate(`/project/${project.id}`)}>{project.project_name}</div>
-                    ))}
+                <div className="guestBoardsContainer">
+                    <h2 className="guestBoardsTitle">Guest Projects</h2>
+                    <div className="guestBoards">
+                        {collaboratorProjects.map(project => (
+                            <div className="guestBoardDiv" key={project.id} onClick={() => navigate(`/project/${project.id}`)}>{project.project_name}</div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
