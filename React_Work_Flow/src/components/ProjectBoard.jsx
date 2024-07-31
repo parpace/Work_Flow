@@ -122,11 +122,14 @@ export default function ProjectBoard (props) {
                 description: taskFormState.description,
                 assigned_users: assignedUserIds
             })
-            setTasksByList({
-                ...tasksByList,
-                [listId]: [...(tasksByList[listId] || []), response.data]
-            })
-            setTaskFormStates({ taskName: '', assignedUsers: [] })
+            setTasksByList(prevTasksByList => ({
+                ...prevTasksByList,
+                [listId]: [...(prevTasksByList[listId] || []), response.data]
+            }))
+            setTaskFormStates(prevTaskFormStates => ({
+                ...prevTaskFormStates,
+                [listId]: { taskName: '', description: '', assignedUsers: [] }
+            }))
             setCurrentListId(null)
         } catch (error) {
             console.error('Error creating new task:', error)
