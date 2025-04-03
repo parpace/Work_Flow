@@ -236,7 +236,7 @@ export default function ProjectBoard (props) {
                                     {list.list_name}
                                 </h3>
                             )}
-                            {tasksByList[list.id] && (
+                            {tasksByList[list.id] && tasksByList[list.id].length > 0 && (
                                 <div className="tasks">
                                     {tasksByList[list.id].map(task => (
                                         <div className="task" key={task.id} onClick={() => toggleTaskDetails(task)}>
@@ -263,11 +263,17 @@ export default function ProjectBoard (props) {
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={item.status}
-                                                                    onChange={() => toggleChecklistItem(task.id, item.id, item.status)}
+                                                                    onChange={(e) => {
+                                                                        e.stopPropagation()
+                                                                        toggleChecklistItem(task.id, item.id, item.status)
+                                                                    }}
                                                                 />
                                                                 <span
                                                                     className="deleteIcon"
-                                                                    onClick={() => deleteChecklistItem(task.id, item.id)}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation()
+                                                                        deleteChecklistItem(task.id, item.id)
+                                                                    }}
                                                                     style={{ cursor: 'pointer', marginLeft: '10px' }}
                                                                 >
                                                                     🗑️
@@ -277,7 +283,10 @@ export default function ProjectBoard (props) {
                                                     ))}
                                                 </div>
                                             )}
-                                            <button className="deleteTask" onClick={() => deleteTask(task.id)}>Delete Task</button>
+                                            <button className="deleteTask" onClick={(e) => {
+                                                e.stopPropagation()
+                                                deleteTask(task.id)
+                                            }}>Delete Task</button>
                                         </div>
                                     ))}
                                 </div>
@@ -379,7 +388,7 @@ export default function ProjectBoard (props) {
                             )}
                         </div>
                         <div className="checklistItems">
-                            {checklistItemsByTask[selectedTask.id].map(item => (
+                            {checklistItemsByTask[selectedTask?.id]?.map(item => (
                                 <div className="checklistItem" key={item.id}>
                                     <div>{item.item_name}</div>
                                     <div className="checklistItemIcons">
